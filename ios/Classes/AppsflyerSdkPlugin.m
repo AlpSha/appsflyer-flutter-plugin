@@ -50,15 +50,19 @@ static BOOL _isSKADEnabled = false;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-    id<FlutterBinaryMessenger> messenger = [registrar messenger];
-    FlutterMethodChannel *channel = [FlutterMethodChannel methodChannelWithName:afMethodChannel binaryMessenger:messenger];
-    FlutterMethodChannel *callbackChannel = [FlutterMethodChannel methodChannelWithName:afCallbacksMethodChannel binaryMessenger:messenger];
-    AppsflyerSdkPlugin *instance = [[AppsflyerSdkPlugin alloc] initWithMessenger:messenger];
-    [registrar addMethodCallDelegate:instance channel:channel];
-    [registrar addMethodCallDelegate:instance channel:callbackChannel];
-    [registrar addApplicationDelegate:instance];
+    static BOOL initialized = NO;
     
-    
+    if (!initialized) {
+        id<FlutterBinaryMessenger> messenger = [registrar messenger];
+        FlutterMethodChannel *channel = [FlutterMethodChannel methodChannelWithName:afMethodChannel binaryMessenger:messenger];
+        FlutterMethodChannel *callbackChannel = [FlutterMethodChannel methodChannelWithName:afCallbacksMethodChannel binaryMessenger:messenger];
+        AppsflyerSdkPlugin *instance = [[AppsflyerSdkPlugin alloc] initWithMessenger:messenger];
+        [registrar addMethodCallDelegate:instance channel:channel];
+        [registrar addMethodCallDelegate:instance channel:callbackChannel];
+        [registrar addApplicationDelegate:instance];
+
+        initialized = YES;
+    }
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
